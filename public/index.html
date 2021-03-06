@@ -14,50 +14,45 @@
     <script src="../dist/umd/vue.js"></script>
     <div id="app" class="myclass" style="color: red; font-size: 14px">
       hello
-      {{name}}{{name}}{{name}}{{name}}{{name}}{{name}}{{name}}{{name}}{{name}}{{name}}{{name}}{{name}}
-      <ul>
-        {{ hobbies }}
-        <li id="1">{{school.mid}}</li>
-        <li id="2">{{school.high}}</li>
-      </ul>
+      {{name}}
     </div>
     <script>
       let vm = new Vue({
         el: "#app",
         data() {
           return {
-            a:33433,
             name: "jiajia",
-            age: 28,
-            school: {
-              mid: "初中",
-              high: "高中",
-            },
-            hobbies: [{ like: "打多多" }, { favorite: "摸多多" }],
+            firstName:"zhu",
+            lastName:"feng",
           };
-        },
-        computed() {},
-        watch() {},
-        beforeCreate() {
-          console.log("user1", this.age);
-        },
-        created() {
-          // console.log("user2", this.age, this.$el);
-        },
-        mounted() {
-          // console.log("3333", this.$el);
-        },
+        },     
+        // 1.计算属性默认不执行，Object.definedProperty的 getter方法
+        // 2. 如果依赖的值不变，就不会重新执行，即使取值 vm.fullName
+        // 3.依赖的值变化了，需要重新取值 vm.firstName = 'zhang' fullname zhangfeng
+        computed:{//实际上是
+          myname(){
+            console.log("ok-myname")
+            return this.firstName + this.lastName;
+          },
+          fullName:{
+            get(){
+              console.log('ok-fullName');
+              return this.firstName + this.lastName;
+            },
+            set(newVal){
+              console.log(newVal)
+            }
+          }
+        } 
+        // dirty表示这个值是不是脏的 true/false，取值后变为dirty false ,依赖值变化了dirty true
       });
-      setTimeout(() => {
-        vm.hobbies.push(1);
-        vm.hobbies.push(2);
-        vm.hobbies.push(3);
-        vm.hobbies.push(4);
-        // 依赖收集
-        // 希望数据变化可以自动的重新执行我们渲染watcher
-        // vm._update(vm._render());
-      }, 1000);
-      // console.log("vm", vm._data, vm.hobbies.push({ small: "小学" })); //此时data的属性都变为了响应式的
+      
+
+      setTimeout(() =>{
+        vm.firstName =  "我的我的我的我的我的我的我的我的我的我的我的我的我的我的"
+      },1000)
+      console.log("vm.firstName ",vm.firstName )
     </script>
   </body>
 </html>
+

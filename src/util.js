@@ -1,5 +1,8 @@
- function isFunction(val) {
+export function isFunction(val) {
   return typeof val === "function";
+}
+export function isObject(val) {
+  return typeof val === "object";
 }
  const LIFECYCLE_HOOKS = [
   "beforeCreate",
@@ -13,7 +16,7 @@
 ];
 // 针对不同的策略不同的方法
 const strats = {};
-function mergeHook(parentVal, childVal) {
+export function mergeHook(parentVal, childVal) {
   if (childVal) {
     if (parentVal) {
       // 新旧都有
@@ -34,7 +37,7 @@ LIFECYCLE_HOOKS.forEach((hook) => {
   strats[hook] = mergeHook;
 });
 // {data:{}} // {data:{}}
- function mergeOptions(parent, child) {
+export function mergeOptions(parent, child) {
   // 1. 初始化父为空
   const options = {};
   // 父有儿没有

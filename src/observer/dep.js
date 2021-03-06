@@ -20,7 +20,8 @@ class Dep {
       watcher.update();
     });
   }
-  addSub(watcher) {
+  // 让watcher里面存放dep
+  addSub(watcher) {    
     this.subs.push(watcher);
   }
 }

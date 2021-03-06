@@ -5,6 +5,12 @@ import { mergeOptions } from "./util";
 export function initMixin(Vue) {
   Vue.prototype._init = function (options) {
     const vm = this;
+    /**
+     * class Sub extends Vue(){
+     * }
+     * Sub.options = {}
+     * let sub = new Sub()
+     * **/
     // 将用户传递的与全局的进行合并 vm.constructor.options？？
     vm.$options = mergeOptions(vm.constructor.options, options);
     // vm.$options = options;

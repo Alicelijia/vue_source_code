@@ -42,7 +42,8 @@ function defineReactvie(data, key, value) {
   // ************************
   Object.defineProperty(data, key, {
     get() {
-      // console.log("获取值");
+      // 如果存在Dep.target说明是在模板中取值，说明需要依赖收集，
+      // 如果为用户watcher, 直接返回新值就可以了
       if (Dep.target) {
         // 意味着我要将waterh存起来，需要将属性对应的watcher存储起来
         dep.depend();

@@ -15,9 +15,9 @@ function parseHTML(html) {
   function createASTElement(tagName, attrs) {
     return {
       tag: tagName,
-      type: ELEMENT_TYPE,
-      children: [],
       attrs,
+      type: ELEMENT_TYPE,
+      children: [],      
       parent: null,
     };
   }
@@ -30,10 +30,11 @@ function parseHTML(html) {
     stack.push(element);
   }
   // 匹配到结束标签 让父以及子相互记住
-  function end(tagName) {
+  function end() {
     let element = stack.pop();
     currentParent = stack[stack.length - 1];
     if (currentParent) {
+      // 循环引用，让父节点记住子节点，子节点记住父节点
       element.parent = currentParent;
       currentParent.children.push(element);
     }
