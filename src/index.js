@@ -1,5 +1,5 @@
 import { initMixin } from "./init";
-import { renderMixin } from "./render";//将render挂载到原型上
+import { renderMixin } from "./render"; //将render挂载到原型上
 import { lifecycleMixin } from "./lifecycle";
 import { initGlobalAPI } from "./initGlobalAPI/index";
 import { stateMixin } from "./state";

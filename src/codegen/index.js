@@ -1,3 +1,6 @@
+/**
+ * 一下匹配以 hello{{ name }}world 为例
+ * */ 
 const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g;
 function gen(node) {
   if (node.type == 1) {
@@ -6,35 +9,39 @@ function gen(node) {
   } else {
     // node.type == 2文本节点
     let text = node.text;
-    // 如果为类似于a b与c的文本 --- a {{name}} b {{age}}  c
-    // "a" + _s(name) +"b" + _s(age)+"c"
-    if (!defaultTagRE.test(text)) {
-      return `_v(${JSON.stringify(text)})`;
-    }
-    // let reg = /a/g ; a.match("abc")
-    // 只要是全局匹配，每次匹配都需要将lastIndex调为0
-    let lastIndex = (defaultTagRE.lastIndex = 0);
-    let tokens = [];
-    let match, index;
-    // 如果匹配到了，匹配不捕获
-    while ((match = defaultTagRE.exec(text))) {
-      // console.log("match", match);
-      index = match.index;
-      // console.log("lastIndex", lastIndex);
-
-      if (index > lastIndex) {
-        // 给字符串加上双引号
-        tokens.push(JSON.stringify(text.slice(lastIndex, index)));
+    if (defaultTagRE.exec(text)) {
+      let lastIndex = defaultTagRE.lastIndex = 0;
+      let index = 0;
+      let match;
+      let tokens = [];
+      while(match = defaultTagRE.exec(text)){
+        /**
+         * 匹配文字 hello{{name}}world ，此时的index为5 
+         * 步近值移动到
+         * 
+         * */ 
+        index = match.index; // 将计步器移动到匹配到插值表达式的位置
+        // 记步器的位置 > 上一次的索引值，说明匹配到了文本
+        if(index > lastIndex){
+          tokens.push(JSON.stringify(text.slice(lastIndex,index)));
+        }
+        tokens.push(`_s(${match[1].trim()})`);
+        // index 就是 hello匹配完之前的索引值为5, match[0],就是"{{name}}"
+        lastIndex = index + match[0].length;
       }
-      tokens.push(`_s(${match[1].trim()})`);
-      lastIndex = index + match[0].length;
+      // 说明匹配完插值表达式后面还有文本
+      if(lastIndex < text.length){
+        tokens.push(JSON.stringify(text.slice(lastIndex)));
+      }
+      /**
+       * 将 tokens = ['"hello"', '_s(name)', '"world"']
+       * 转换成'"hello"+_s(name)+"world"'
+       * */ 
+      return `_v(${tokens.join('+')})`
+    } else {
+      // 如果插值表达式的正则匹配不到，则说明是纯文本
+      return `_v(${JSON.stringify(text)})`
     }
-    // 最后一个 c匹配不到
-    if (lastIndex < text.length) {
-      tokens.push(JSON.stringify(text.slice(lastIndex)));
-    }
-    // console.log("tokens", tokens);
-    return `_v(${tokens.join("+")})`;
   }
 }
 // 生成儿子节点
@@ -51,7 +58,7 @@ function getChildren(el) {
 // 生成属性
 function genProps(attrs) {
   // 生成属性
-
+  // console.log("attrs",attrs);
   let str = "";
   for (let i = 0; i < attrs.length; i++) {
     let attr = attrs[i];
@@ -65,6 +72,7 @@ function genProps(attrs) {
     }
     str += `${attr.name}:${JSON.stringify(attr.value)},`;
   }
+  // console.log("str",str)
   return `{${str.slice(0, -1)}}`;
 }
 
@@ -73,9 +81,44 @@ export function generate(el) {
   let children = getChildren(el);
   let code = `_c('${el.tag}',${
     el.attrs.length ? `${genProps(el.attrs)}` : "undefined"
-  }${children ? `,${children}` : ""})`;
+    }${children ? `,${children}` : ""})`;
   // console.log("code", code);
   return code;
 }
 
 
+
+
+/**
+ * genProps 做了什么？将对象属性转换成
+[
+    {
+        "name": "id",
+        "value": "app"
+    },
+    {
+        "name": "class",
+        "value": "myclass"
+    },
+    {
+        "name": "style",
+        "value": "color: red;"
+    }
+]
+
+id:"app",class:"myclass",style:{"color":" red"},
+ * 
+ * 
+ * */ 
+
+
+
+/**
+ * 为什么匹配的时候需要维护一个lastIndex？
+ * 因为 exec匹配捕获的时候会有bug
+ * 如：let  reg = /b/g;
+ * reg.exec('abc');
+ * ['b', index: 1, input: 'abc', groups: undefined]
+ * 其中会返回匹配到的index的值
+ * ps: 在书中120p有写
+ * */ 

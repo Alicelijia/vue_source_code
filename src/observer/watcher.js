@@ -18,6 +18,7 @@ class Watcher {
       // 需要将表达式转换为函数 school.mid
       this.getter = function () {
         // console.log("如果是用户watcher", "exprOrFn", vm[exprOrFn])
+      
         let path = exprOrFn.split(".");
         let obj = vm;
         for (let i = 0; i < path.length; i++){
@@ -73,6 +74,7 @@ class Watcher {
     this.dirty = false;//表示当前已经取值过了
   }
 }
+
 
 let queue = [];
 let has = {};

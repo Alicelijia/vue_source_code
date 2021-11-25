@@ -337,11 +337,11 @@ Vue.prototype.$mount = function(el){
 
 希望通过parseHtml实现
 
-![html](E:\zhufeng\vue-yuan-ma\vue_source_code\image\html.png)
+![html](E:\workshop\vue_origin\vue_source_code\image\\html.png)
 
 实现： AST语法树图
 
-![AST语法树](E:\zhufeng\vue-yuan-ma\vue_source_code\image\root.png)
+![AST语法树](E:\workshop\vue_origin\vue_source_code\image\\root.png)
 
 #### 实现步骤
 
@@ -627,7 +627,7 @@ function gen(node){
 }
 ```
 
-![](E:\zhufeng\vue-yuan-ma\vue_source_code\image\tokens.png)
+![](E:\workshop\vue_origin\vue_source_code\image\\tokens.png)
 
 #### 生成`render`函数
 
@@ -659,9 +659,7 @@ export function renderMixin(Vue){
 }
 ```
 
-
-
-![](E:\zhufeng\vue-yuan-ma\vue_source_code\image\虚拟dom.png)
+![](E:\workshop\vue_origin\vue_source_code\image\虚拟dom.png)
 
 ### 6. 转换成真实的dom, 也就是数据更新后的dom
 

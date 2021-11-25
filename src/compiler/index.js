@@ -109,6 +109,7 @@ export function compileToFunctions(template) {
   // 需要将ast语法树生成最终的render函数;
   let render = `with(this){return ${code}}`;
   let renderFn = new Function(render);
+  // console.log("renderFn",renderFn)
   return renderFn;
 }
 // 所有的模板引擎的实现都需要new Function 以及 with
@@ -120,3 +121,18 @@ export function compileToFunctions(template) {
 //   { id: "app" },
 //   _c("p", undefined, _v("hello" + _s(name)), _v("hello"))
 // );
+
+/**
+ * 
+renderFn ƒ anonymous(
+) {
+with(this){return _c('div',{id:"app",class:"myclass",style:{"color":" red"}},_c('span',undefined,_v("hello")))}
+}
+
+renderFn ƒ anonymous(
+) {
+with(this) {return _c('div',{id:"app",class:"myclass",style:{"color":" red"}},_v(""),_c('span',undefined,_v("hello"),_v("")))}
+}
+
+ * 
+ * */ 

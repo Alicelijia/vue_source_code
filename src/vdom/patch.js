@@ -1,59 +1,82 @@
-export function patch(oldVnode, vnode) {
-  // console.log("vnode", oldVnode, vnode);
-  // 如果有nodeType属性则为真实的dom
-  const isRealElement = oldVnode.nodeType;
-  if (isRealElement) {
-    const oldElm = oldVnode;
-    // 获取当前根元素的父节点
-    const parentElm = oldElm.parentNode;
-    // 根据vdom生成真是的dom
-    let el = createElm(vnode);
-    // console.log("转换后的真实dom",el)
-    // 插入根元素的 nextSibling
-    parentElm.insertBefore(el, oldElm.nextSibling);
-    // 移除旧节点
-    parentElm.removeChild(oldVnode);
-    return el;
+export function patch(oldnode,vnode){
+  const isRealElement = oldnode.nodeType;
+  /**
+   *  如果是第一次渲染，则isRealElement == 1 说明为真实的节点，则
+   * 直接创建真实的节点，插入页面替换原有的dom
+   * 为了保持节点的位置，使用insertBefore,先获取旧节点的父节点的位置
+   * insertBefore(新创建的节点，旧节点的.nextSibling)
+   * 删除页面中旧有的节点
+  */
+  if(isRealElement){
+    const realNode = vnodeToRealElm(vnode);
+    const parentNode = oldnode.parentNode;
+    parentNode.insertBefore(realNode,oldnode.nextSibling);
+    parentNode.removeChild(oldnode);
   }
 }
 
-// ***将vdom生成真实的dom
-// 创建vnode与真是dom的映射关系
-function createElm(vnode) {
-  let { tag, children, key, data, text } = vnode;
-  if (typeof tag == "string") {
-    // 根据当前的tag，创建真实的dom节点
+
+
+
+/**
+ * 根据虚拟节点渲染真实的节点
+ * 
+ * */ 
+function vnodeToRealElm(vnode){
+  let {vm, tag,data,key,children,text,Ctor} = vnode;
+  if(typeof tag === 'string'){
     vnode.el = document.createElement(tag);
-    children.forEach((child) => {
-      // 递归的创建孩子节点，将儿子节点放入父节点中
-      return vnode.el.appendChild(createElm(child));
-    });
-    // 根据属性对象描述生成真实的属性
-    updateProperties(vnode);
+    // 解析属性
+    updateProperties(vnode,vnode.data);
+    if(children){
+      children.forEach(child => {
+        return vnode.el.appendChild(vnodeToRealElm(child))
+      });
+    }
   } else {
     vnode.el = document.createTextNode(text);
   }
   return vnode.el;
 }
 
-// 更新属性
-function updateProperties(vnode) {
-  let newProps = vnode.data || {}; // 获取当前老节点中的属性
-  let el = vnode.el; // 当前的真实节点
-  // console.log("newProps", newProps);
-  const isHaveProp = Object.keys(newProps).length > 0;
-  if (isHaveProp) {
-    for (let key in newProps) {
-      if (key == "style") {
-        for (let styleName in newProps.style) {
-          el.style[styleName] = newProps.style[styleName];
-        }
-        if (key == "class") {
-          el.className = newProps.class;
-        }
-      } else {
-        el.setAttribute(key, newProps[key]);
-      }
+/**
+ * 解析属性
+{
+    "id": "app",
+    "class": "myclass",
+    "style": {
+        "color": " red"
+    }
+}
+转换成
+属性放入到标签上
+
+ * */ 
+
+  // 新旧节点如何对比差异？
+  function updateProperties(vnode,oldProps = {}){
+  // 对标签上的属性进行新旧的对比处理
+  let newProps = vnode.data || {};
+  /**
+   * 真实的dom,在根据虚拟节点创建真实节点的时候，在虚拟节点上挂载了真实的节点
+   * */ 
+  let el = vnode.el; 
+  /**
+   * 新的属性，不管旧的 有没有都用新的
+   * 
+   * */ 
+  for(let key in newProps){
+    if(key === 'style'){
+      let styleValue = newProps.style;
+      let attributes = Object.keys(styleValue);
+      attributes.forEach((attribute) => {
+        el.style[attribute] = newProps.style[attribute] 
+      })
     }
   }
-}
+ }
+
+/**
+ * 修改dom的属性，dom.style.color = 属性值
+ * 
+ * */  

@@ -12,11 +12,16 @@
   </style>
   <body>
     <script src="../dist/umd/vue.js"></script>
-    <div id="app" class="myclass" style="color: red; font-size: 14px">
-      hello
-      {{name}}
+    <div id="app" class="myclass" style="color: red;font-size: 16px;">   
+      <span>wode</span>   
+        <span>hello{{ firstName }}world</span>
+        <my-component></my-component>
     </div>
     <script>
+
+      Vue.component('my-component',{
+          template:'<button>我是全局组件</button>',
+      });
       let vm = new Vue({
         el: "#app",
         data() {
@@ -26,17 +31,22 @@
             lastName:"feng",
           };
         },     
+        components:{
+          "my-component":{
+            template:"<button>我是局部组件</button>"
+          }
+        },
         // 1.计算属性默认不执行，Object.definedProperty的 getter方法
         // 2. 如果依赖的值不变，就不会重新执行，即使取值 vm.fullName
         // 3.依赖的值变化了，需要重新取值 vm.firstName = 'zhang' fullname zhangfeng
         computed:{//实际上是
           myname(){
-            console.log("ok-myname")
+            // console.log("ok-myname")
             return this.firstName + this.lastName;
           },
           fullName:{
             get(){
-              console.log('ok-fullName');
+              // console.log('ok-fullName');
               return this.firstName + this.lastName;
             },
             set(newVal){
@@ -50,8 +60,11 @@
 
       setTimeout(() =>{
         vm.firstName =  "我的我的我的我的我的我的我的我的我的我的我的我的我的我的"
+        console.log("vm",vm._update);
+        console.log("vm",vm._render);
+        // vm._update(vm._render())
       },1000)
-      console.log("vm.firstName ",vm.firstName )
+      console.log("vm.firstName ", )
     </script>
   </body>
 </html>

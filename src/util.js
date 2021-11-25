@@ -2,7 +2,7 @@ export function isFunction(val) {
   return typeof val === "function";
 }
 export function isObject(val) {
-  return typeof val === "object";
+  return typeof val === "object" && typeof val !== null;
 }
  const LIFECYCLE_HOOKS = [
   "beforeCreate",
@@ -17,6 +17,7 @@ export function isObject(val) {
 // 针对不同的策略不同的方法
 const strats = {};
 export function mergeHook(parentVal, childVal) {
+  // 有新的
   if (childVal) {
     if (parentVal) {
       // 新旧都有
@@ -30,13 +31,25 @@ export function mergeHook(parentVal, childVal) {
     return parentVal;
   }
 }
-// strats = {
-//   beforeCreate:mergeHook()
-// }
+
 LIFECYCLE_HOOKS.forEach((hook) => {
   strats[hook] = mergeHook;
 });
-// {data:{}} // {data:{}}
+
+
+// components的合并策略，就是让子继承父的
+strats.components = function(parent, child){
+  // 先根据父亲的原型创建一个对象
+  let fatherPrototype = Object.create(parent);
+  if(child){
+    for(let key in child){
+      // 让新的对象上，copy儿子的属性
+      fatherPrototype[key] = child[key];
+    }
+  }
+  return fatherPrototype;
+}
+
 export function mergeOptions(parent, child) {
   // 1. 初始化父为空
   const options = {};
@@ -70,9 +83,16 @@ export function mergeOptions(parent, child) {
       options[key] = parentVal;
     } else if (parent[key] == null) {
       // 父没有以子为准
-      options[key] = child[key];
+      // 父亲中有，儿子中没有
+      options[key] = child[key] || parent[key];
     }
   }
   return options;
 }
 
+export const isReservedTag = function (myAssets) {
+  // 源码根据 ","切割，生成映射表 {a:true,div:true,p:true}
+  let str = 'a,div,span,p,img,button,ul,li';
+  // console.log()
+  return str.includes(myAssets)
+}
