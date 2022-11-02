@@ -2,11 +2,16 @@
 /**
  * 特别注意这里的children不能为展开式
  * */ 
-
-export function createElement(vm,tag,data = {},...children){
-  const vnode =  new Vnode(vm,tag,data,data.key,children,undefined);
-  // console.log("vnode",vnode);
-  return vnode;
+import { isReservedTag, isObject } from '../util'
+export function createElement(vm,tag,data = {},...children){  
+  if(isReservedTag(tag)){
+    return new Vnode(vm,tag,data,data.key,children,undefined);
+  } else {
+    // 组件的渲染
+   
+    let Ctor = vm.$options.components[tag];   
+    return createComponent(vm,tag,data,data.key,children,undefined,Ctor)
+  }
 }
 
 export function createTextNode(vm,text){
@@ -21,6 +26,28 @@ function Vnode(vm,tag,data,key,children,text,Ctor){
   this.children = children;
   this.text = text;
   this.Ctor = Ctor;
+}
+
+// 组件的创建
+function createComponent(vm,tag,data,key,children,undefined,Ctor){
+  if(isObject(Ctor)){
+    Ctor = vm.$options._base.extend(Ctor);
+  }
+  data.hook = {
+    init(vnode){
+      // console.log("组建的额vnode",vnode);
+      let child = vnode.componentInstance = new Ctor({});
+      child.$mount();
+    },
+    prepatch(){
+
+    },
+    postpatch(){
+
+    }
+  }
+  // console.log("tag",new Vnode(`vue-component-${Ctor.cid}-${tag}`,data,key,undefined,{Ctor,children});
+  return new Vnode(vm,`vue-component-${tag}`,data,key,undefined,children,{Ctor})
 }
 
 /**

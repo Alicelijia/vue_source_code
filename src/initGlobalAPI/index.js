@@ -12,6 +12,7 @@ export function initGlobalAPI(Vue) {
   Vue.minxin = function (mixin) {
     // console.log("mixin",mixin)
     this.options = mergeOptions(this.options, mixin);
+    return this;
   };
   // 生命周期的合并 [beforeCreated,beforeCreated]
   Vue.minxin({
@@ -28,7 +29,7 @@ export function initGlobalAPI(Vue) {
   });
   // _base 就是Vue的构造函数
   // 无论后续创建多少个子类，都可以通过_base找到Vue
-  Vue._base = Vue;
+  // Vue._base = Vue;
   Vue.options.components = {}
 
   Vue.component = function(id,definition){
@@ -48,7 +49,8 @@ export function initGlobalAPI(Vue) {
     const Sub = function(options){
       this._init(options)
     }
-    Sub.prototype = Object.create(Super);
+    // 这里一定要继承父类的原型，否则不会去原型上找_init方法
+    Sub.prototype = Object.create(Super.prototype);
     Sub.prototype.constructor = Sub;
     // 将父子组件的options进行合并处理
     Sub.options = mergeOptions(Super.options,opt);

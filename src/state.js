@@ -21,10 +21,10 @@ export function initState(vm) {
     initMethod(vm);
   }
   if (opts.computed) {
-    initComputed(vm,opts.computed);
+    // initComputed(vm,opts.computed);
   }
   if (opts.watch) {
-    initWatch(vm,opts.watch);
+    // initWatch(vm,opts.watch);
   }
 }
 function initProps() {}

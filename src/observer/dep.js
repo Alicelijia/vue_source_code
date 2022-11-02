@@ -7,6 +7,7 @@ class Dep {
   }
   // 用观察者模式
   depend() {
+    // 如果渲染Watche存在
     if (Dep.target) {
       // this.subs.push(Dep.target);
       Dep.target.addDep(this); // 让watcher,去存放dep

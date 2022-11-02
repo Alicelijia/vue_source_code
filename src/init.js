@@ -23,7 +23,6 @@ export function initMixin(Vue) {
     const options = vm.$options;
     // 获取用户传入的元素
     el = document.querySelector(el);
-    vm.$el = el;
     // 把模板转换成对应的渲染函数 =》 虚拟dom的概念 vnode => diff算法 更新虚拟dom => 产生真实的dom更新
     if (!options.render) {
       // 1 如果用户没有传入render

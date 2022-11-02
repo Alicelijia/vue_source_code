@@ -9,8 +9,8 @@ export function lifecycleMixin(Vue){
      * */ 
     
     const prevVnode = vm._vnode;
-    if(prevVnode){
-      vm._vnode = vnode;
+    vm._vnode = vnode;
+    if(prevVnode){      
       vm.$el = patch(prevVnode,vnode)
     } else {
       /**
@@ -24,6 +24,7 @@ export function lifecycleMixin(Vue){
 
 // 通过mountComponent渲染页面
 export function mountComponent(vm,el){
+  vm.$el = el;
   const updateComponent = function(){
     vm._update(vm._render());
   }

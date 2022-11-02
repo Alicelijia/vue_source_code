@@ -10,12 +10,12 @@
 
 ### 2.1按照rollup环境
 
-> npm install @babel/preset-env @babel/core rollup rollup-pluginbabel rollup-plugin-serve cross-env -D
+> npm install @babel/preset-env @babel/core rollup rollup-plugin babel rollup-plugin-serve cross-env -D
 
 #### 2.2rollup.config.js配置
 
 ```javascript
-import babel from "rollup-plugin-bable";
+import babel from "rollup-plugin-babel";
 import serve from "rollup-plugin-serve";
 export default {
     input:"./src/index.js",

@@ -1,4 +1,8 @@
+// import 
 export function patch(oldnode,vnode){
+  if(!oldnode){
+    return vnodeToRealElm(vnode) ; // 产生组件的真实节点
+  }
   const isRealElement = oldnode.nodeType;
   /**
    *  如果是第一次渲染，则isRealElement == 1 说明为真实的节点，则
@@ -15,7 +19,19 @@ export function patch(oldnode,vnode){
   }
 }
 
-
+/**
+ * 判断是否为组件
+ * 
+ * */ 
+function createComponent(vnode){
+  let init = vnode.data;
+  if(init.hook && init.hook.init){
+    init.hook.init(vnode);    
+  } 
+  if(vnode.componentInstance){
+    return vnode.componentInstance;
+  }
+}
 
 
 /**
@@ -25,6 +41,14 @@ export function patch(oldnode,vnode){
 function vnodeToRealElm(vnode){
   let {vm, tag,data,key,children,text,Ctor} = vnode;
   if(typeof tag === 'string'){
+    /**
+     * 每一个节点对应的vnode为 vnode
+     * 
+     * createComponent(vnode)
+    */
+    if(createComponent(vnode)){
+      return vnode.componentInstance.$el;
+    }
     vnode.el = document.createElement(tag);
     // 解析属性
     updateProperties(vnode,vnode.data);
